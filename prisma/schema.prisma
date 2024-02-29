@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator docs {
+  provider = "node node_modules/prisma-docs-generator"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  login     String    @unique
+  password  String
+  birthDate DateTime?
+  createdAt DateTime  @default(now())
+  test      Answer[]
+  isAdmin   Boolean @default(false)
+
+  @@unique([login, password])
+}
+
+model Answer {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  updatedAt DateTime @updatedAt
+  title     String
+  answer    String
+  author    User?    @relation(fields: [authorId], references: [id])
+  authorId  String
+  published Boolean   @default(false)
+}
+
