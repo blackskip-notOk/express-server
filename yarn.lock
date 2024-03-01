@@ -148,6 +148,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@evilmartians/lefthook@npm:^1.6.4":
+  version: 1.6.4
+  resolution: "@evilmartians/lefthook@npm:1.6.4"
+  bin:
+    lefthook: bin/index.js
+  checksum: 10c0/49691fe1136575c8ebae849ea99645cf9e60e0e7bc43546fd47c5a0a35210e18b0056425fc59b08bc58beb625476f934997746680227493a0114014393c961b6
+  conditions: (os=darwin | os=linux | os=win32) & (cpu=x64 | cpu=arm64 | cpu=ia32)
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1553,6 +1563,7 @@ __metadata:
   resolution: "express-server@workspace:."
   dependencies:
     "@biomejs/biome": "npm:^1.5.3"
+    "@evilmartians/lefthook": "npm:^1.6.4"
     "@prisma/client": "npm:^5.10.2"
     "@types/bcrypt": "npm:^5"
     "@types/express": "npm:^4.17.21"

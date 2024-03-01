@@ -1,77 +1,76 @@
-import type { Response, Request } from 'express';
-import { LoginRejectBody, LoginRequestBody } from './types'
-import { ADMIN, ResponseCode } from '../../constants/codes';
-import { prisma } from '../../index';
-import { Prisma } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import type { Response, Request } from "express"
+import { LoginRejectBody, LoginRequestBody } from "./types"
+import { ADMIN, ResponseCode } from "../../constants/codes"
+import { prisma } from "../../index"
+import { Prisma } from "@prisma/client"
+import * as bcrypt from "bcrypt"
 
 export async function signup(req: Request<unknown, unknown, Prisma.UserCreateInput>, res: Response) {
 	const signupRequestDto = req.body
-		try {
-		  const passwordHash = await bcrypt.hash(signupRequestDto.password, 10);
-		  signupRequestDto.password = passwordHash;
+	try {
+		const passwordHash = await bcrypt.hash(signupRequestDto.password, 10)
+		signupRequestDto.password = passwordHash
 
-		  const newUser = await this.userService.create(signupRequestDto);
+		const newUser = await this.userService.create(signupRequestDto)
 
-		  const { idToken } = await this.createAccessToken(newUser.id)
+		const { idToken } = await this.createAccessToken(newUser.id)
 
-		  res.cookie(process.env.COOKIE_NAME, idToken, {
+		res.cookie(process.env.COOKIE_NAME, idToken, {
 			httpOnly: true,
 			secure: true,
 			sameSite: true,
 			maxAge: 1000 * 60 * 60 * 24 * 7,
-			path: '/',
-		  });
+			path: "/",
+		})
 
-		  res.json(newUser)
-		} catch (error) {
-			throw new Error(`Create user failed cause: ${error}`);
-		}
-  }
+		res.json(newUser)
+	} catch (error) {
+		throw new Error(`Create user failed cause: ${error}`)
+	}
+}
 
 export const loginRejectBody: LoginRejectBody = {
 	timestamp: new Date(),
-	error: 'Unauthorized',
-	message: 'Incorrect password for the ADMIN',
+	error: "Unauthorized",
+	message: "Incorrect password for the ADMIN",
 	code: ResponseCode.UNAUTHORIZED,
-};
+}
 
 export function login(req: Request<unknown, void, LoginRequestBody>, res: Response) {
-	const { username, password } = req.body;
+	const { username, password } = req.body
 
 	if (!username || !password) {
-		res.clearCookie('ADMIN-AUTH');
-		res.clearCookie('CANDIDATE-AUTH');
-		res.status(ResponseCode.BAD_REQUEST).json(`Need to send ${username ? 'password' : 'username'}`);
+		res.clearCookie("ADMIN-AUTH")
+		res.clearCookie("CANDIDATE-AUTH")
+		res.status(ResponseCode.BAD_REQUEST).json(`Need to send ${username ? "password" : "username"}`)
 	}
 
 	if (username === ADMIN && password !== ADMIN) {
-		res.clearCookie('ADMIN-AUTH');
-		res.clearCookie('CANDIDATE-AUTH');
+		res.clearCookie("ADMIN-AUTH")
+		res.clearCookie("CANDIDATE-AUTH")
 
-		res.status(ResponseCode.UNAUTHORIZED).json(loginRejectBody);
+		res.status(ResponseCode.UNAUTHORIZED).json(loginRejectBody)
 	}
 
 	if (username === ADMIN && password === ADMIN) {
-		res.cookie('ADMIN-AUTH', username, { httpOnly: true });
-		res.clearCookie('CANDIDATE-AUTH');
-		res.sendStatus(ResponseCode.NO_CONTENT);
+		res.cookie("ADMIN-AUTH", username, { httpOnly: true })
+		res.clearCookie("CANDIDATE-AUTH")
+		res.sendStatus(ResponseCode.NO_CONTENT)
 	}
 
 	if (username !== ADMIN && password !== ADMIN) {
-		res.cookie('CANDIDATE-AUTH', username, { httpOnly: true });
-		res.clearCookie('ADMIN-AUTH');
-		res.sendStatus(ResponseCode.NO_CONTENT);
+		res.cookie("CANDIDATE-AUTH", username, { httpOnly: true })
+		res.clearCookie("ADMIN-AUTH")
+		res.sendStatus(ResponseCode.NO_CONTENT)
 	}
 }
 
 export function logout(_req: Request, res: Response) {
-	res.clearCookie('ADMIN-AUTH');
-	res.clearCookie('CANDIDATE-AUTH');
+	res.clearCookie("ADMIN-AUTH")
+	res.clearCookie("CANDIDATE-AUTH")
 
-	res.sendStatus(ResponseCode.NO_CONTENT);
+	res.sendStatus(ResponseCode.NO_CONTENT)
 }
-
 
 // app.post(`/signup`, async (req, res) => {
 // 	const { name, email, posts } = req.body

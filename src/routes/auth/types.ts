@@ -1,15 +1,15 @@
-import { ResponseCode } from '../../constants/codes';
+import { ResponseCode } from "../../constants/codes"
 
 export interface LoginRequestBody {
 	/** user name or surname */
-	username: string;
+	username: string
 	/** if user is admin - custom password, if user is a candidate - birth date */
-	password: string;
+	password: string
 }
 
 export interface LoginRejectBody {
-	timestamp: Date;
-	error: string;
-	message: string;
-	code: typeof ResponseCode[keyof typeof ResponseCode];
+	timestamp: Date
+	error: string
+	message: string
+	code: (typeof ResponseCode)[keyof typeof ResponseCode]
 }

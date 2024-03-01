@@ -6,6 +6,6 @@ export const ResponseCode = {
 	FORBIDDEN: 403,
 	NOT_FOUND: 404,
 	SERVER_ERROR: 500,
-} as const;
+} as const
 
-export const ADMIN = 'admin'
+export const ADMIN = "admin"

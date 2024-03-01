@@ -1,0 +1,24 @@
+min_version: 1.6.0
+
+pre-commit:
+  parallel: false
+  piped: true
+  commands:
+    lint-ts:
+      priority: 1
+      skip:
+        - merge
+        - rebase
+      run: yarn biome lint src --verbose --colors=force --use-server --log-level=error --apply  --diagnostic-level=warn {staged_files}
+    format-ts:
+      priority: 2
+      skip:
+        - merge
+        - rebase
+      run: yarn biome format src --write --verbose --colors=force --use-server --log-level=error --diagnostic-level=warn {staged_files} && git add {staged_files}
+      stage_fixed: true
+# pre-push:
+#   commands:
+#     check:
+#       glob: "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc}"
+#       run: yarn dlx biome check --no-errors-on-unmatched --files-ignore-unknown=true {push_files}
