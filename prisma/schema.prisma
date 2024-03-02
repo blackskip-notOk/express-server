@@ -18,24 +18,24 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  login     String    @unique
-  password  String
-  birthDate DateTime?
-  createdAt DateTime  @default(now())
-  test      Answer[]
-  isAdmin   Boolean @default(false)
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName String?
+  lastName  String?
+  login     String?  @unique
+  password  String?
+  createdAt DateTime @default(now())
+  // test      Answer[]
+  isAdmin   Boolean  @default(false)
 
   @@unique([login, password])
 }
 
-model Answer {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  updatedAt DateTime @updatedAt
-  title     String
-  answer    String
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  String
-  published Boolean   @default(false)
-}
-
+// model Answer {
+//   id        String   @id @default(uuid()) @db.Uuid
+//   updatedAt DateTime @updatedAt
+//   title     String
+//   answer    String
+//   author    User?    @relation(fields: [authorId], references: [id])
+//   authorId  String   @db.Uuid
+//   published Boolean  @default(false)
+// }

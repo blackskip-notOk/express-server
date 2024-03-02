@@ -6,7 +6,7 @@ import { authRouter, pingRouter } from "./routes"
 
 export const prisma = new PrismaClient()
 
-const PORT = 3000
+const PORT = 3003
 
 const app: Express = express()
 

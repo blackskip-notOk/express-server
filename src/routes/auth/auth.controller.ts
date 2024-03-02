@@ -1,31 +1,52 @@
-import type { Response, Request } from "express"
-import { LoginRejectBody, LoginRequestBody } from "./types"
-import { ADMIN, ResponseCode } from "../../constants/codes"
-import { prisma } from "../../index"
 import { Prisma } from "@prisma/client"
 import * as bcrypt from "bcrypt"
+import type { Request, Response } from "express"
+import { ADMIN, ResponseCode } from "../../constants/codes"
+import { prisma } from "../../index"
+import { LoginRejectBody, LoginRequestBody } from "./types"
+
+export interface SignupRequest {
+	firstName?: string
+	lastName?: string
+	login?: string
+	password?: string
+	isAdmin: boolean
+}
 
 export async function signup(req: Request<unknown, unknown, Prisma.UserCreateInput>, res: Response) {
 	const signupRequestDto = req.body
 	try {
-		const passwordHash = await bcrypt.hash(signupRequestDto.password, 10)
-		signupRequestDto.password = passwordHash
+		const { isAdmin } = signupRequestDto
 
-		const newUser = await this.userService.create(signupRequestDto)
+		if (isAdmin) {
+			bcrypt
+				.hash(signupRequestDto.password, 10)
+				.then((hashedPassword) => {
+					signupRequestDto.password = hashedPassword
+				})
+				.catch((error) => {
+					res.sendStatus(500).json({
+						message: "Password was not hashed successfully",
+						error,
+					})
+				})
+		}
 
-		const { idToken } = await this.createAccessToken(newUser.id)
-
-		res.cookie(process.env.COOKIE_NAME, idToken, {
-			httpOnly: true,
-			secure: true,
-			sameSite: true,
-			maxAge: 1000 * 60 * 60 * 24 * 7,
-			path: "/",
+		const newUser = await prisma.user.create({
+			data: signupRequestDto,
 		})
 
-		res.json(newUser)
+		if (newUser.isAdmin) {
+			const { id, isAdmin, login, createdAt } = newUser
+
+			res.status(201).json({ id, isAdmin, login, createdAt })
+		} else {
+			const { id, isAdmin, firstName, lastName, createdAt } = newUser
+
+			res.status(201).json({ id, isAdmin, firstName, lastName, createdAt })
+		}
 	} catch (error) {
-		throw new Error(`Create user failed cause: ${error}`)
+		res.sendStatus(400).json({ message: "Error creating user", error })
 	}
 }
 
@@ -36,7 +57,7 @@ export const loginRejectBody: LoginRejectBody = {
 	code: ResponseCode.UNAUTHORIZED,
 }
 
-export function login(req: Request<unknown, void, LoginRequestBody>, res: Response) {
+export async function login(req: Request<unknown, void, LoginRequestBody>, res: Response) {
 	const { username, password } = req.body
 
 	if (!username || !password) {
