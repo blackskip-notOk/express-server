@@ -22,7 +22,7 @@ model User {
   firstName String?
   lastName  String?
   login     String?  @unique
-  password  String?
+  password  String?  @unique
   createdAt DateTime @default(now())
   // test      Answer[]
   isAdmin   Boolean  @default(false)
