@@ -51,5 +51,5 @@ model Answer {
   updatedAt  DateTime @updatedAt
   title      String   @unique
   question   Question @relation(fields: [questionId], references: [id])
-  questionId String
+  questionId String   @db.Uuid
 }
