@@ -30,12 +30,26 @@ model User {
   @@unique([login, password])
 }
 
-// model Answer {
-//   id        String   @id @default(uuid()) @db.Uuid
-//   updatedAt DateTime @updatedAt
-//   title     String
-//   answer    String
-//   author    User?    @relation(fields: [authorId], references: [id])
-//   authorId  String   @db.Uuid
-//   published Boolean  @default(false)
-// }
+enum QuestionType {
+  checkbox
+  radio
+}
+
+model Question {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  title          String       @unique
+  type           QuestionType
+  answers        Answer[]
+  correctAnswers String[]
+}
+
+model Answer {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  title      String   @unique
+  question   Question @relation(fields: [questionId], references: [id])
+  questionId String
+}

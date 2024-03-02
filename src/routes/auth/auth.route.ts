@@ -6,8 +6,4 @@ export const authRouter = Router()
 
 authRouter.post(API_SINGUP, signup)
 
-authRouter.get(API_LOGIN, (req, res) => {
-	res.send("WTF")
-})
-
 authRouter.post(API_LOGIN, login)
