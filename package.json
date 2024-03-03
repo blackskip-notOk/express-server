@@ -14,9 +14,8 @@
 	"type": "commonjs",
 	"scripts": {
 		"build": "tsc",
-		"prestart": "tsc",
-		"start": "yarn prestart && node dist/index.js",
-		"debug": "yarn prestart && node --inspect dist/index.js"
+		"start": "yarn build && node dist/index.js",
+		"debug": "yarn build && node --inspect dist/index.js"
 	},
 	"dependencies": {
 		"@prisma/client": "^5.10.2",

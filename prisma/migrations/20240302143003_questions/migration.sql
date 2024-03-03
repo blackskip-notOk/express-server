@@ -21,11 +21,11 @@ CREATE TABLE "Question" (
 
 -- CreateTable
 CREATE TABLE "Answer" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+    "id" INT8 NOT NULL DEFAULT unique_rowid(),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "title" STRING NOT NULL,
-    "questionId" STRING NOT NULL,
+    "questionId" UUID NOT NULL,
 
     CONSTRAINT "Answer_pkey" PRIMARY KEY ("id")
 );
